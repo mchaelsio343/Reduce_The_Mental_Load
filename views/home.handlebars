@@ -81,3 +81,91 @@
 		event.preventDefault();
 	}
 </script>
+
+<div class="container">
+<h2>Add Appointment</h2>
+<div class="form-group">
+	<label>Appointment Name</label>
+	<input type="text" class="form-control" id="appointmentName">
+</div>
+
+<div class="form-group">
+	<label>Location</label>
+	<input type="text" class="form-control" id="appointmentLocation">
+</div>
+		
+<div class="form-group">
+	<label>Date</label>
+	<div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+		<input id="appointmentDate" type="text" class="form-control datetimepicker-input" data-target="#datetimepicker2"/>
+		<div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+			<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	<label>Description</label>
+	<input type="text" class="form-control" id="appointmentDescription">
+</div>
+
+<div class="form-group row" id="AddAPPOINTMENT">
+	<div class="col-sm-10">
+		<button type="submit" class="btn btn-primary">Add Appointment</button>
+	</div>
+</div>
+</div>
+
+
+<!--Timepicker JavaScript-->
+<script type="text/javascript">
+	$(function () {
+		$('#datetimepicker2').datetimepicker();
+	});
+</script>
+	
+
+<!--Add TODO button JavaScript-->
+<script type="text/javascript">
+	//blind the button with event listener
+	var AddAPPOINTMENT_Btn = document.getElementById("AddAPPOINTMENT");
+	AddAPPOINTMENT_Btn.addEventListener("click", requestAddAPPOINTMENT);
+
+	//inform server to insert a TODO task to DB by ajax
+	function requestAddAPPOINTMENT(e){
+
+		
+		//pack up the data that will be sent to the server
+		var dataToServer = {};
+		dataToServer.appointmentName = document.getElementById("appointmentName").value;
+		dataToServer.appointmentLocation = document.getElementById("appointmentLocation").value;
+		rawDate = document.getElementById("appointmentDate").value;
+		dataToServer.appointmentDate = moment(rawDate).format('YYYY-MM-DD HH:mm:ss');	//re-format date for DB
+		dataToServer.appointmentDescription = document.getElementById("appointmentDescription").value;
+		dataToServer = JSON.stringify(dataToServer);
+
+		//test log
+		console.log("We are inside requestAddAPPOINTMENT(). dataToServer: ");
+		console.log(dataToServer)
+
+		
+		//connect with the server
+		var req = new XMLHttpRequest();
+		req.open("POST","/addAPPOINTMENT",true);
+		req.setRequestHeader("Content-Type", "application/json");
+
+		//callback
+		req.addEventListener("load",function(){
+		if(req.status >= 200 && req.status < 400){
+
+		} else {
+		console.log("Error in network request: " + req.statusText);
+		}});
+
+		//send the data to server
+		req.send(dataToServer);
+		
+		event.preventDefault();
+	}
+</script>
+

@@ -29,6 +29,20 @@ app.post('/addTODO',function(req,res,next){
   });
 });
 
+//insert a record into the table `APPOINTMENT`
+app.post('/addAPPOINTMENT',function(req, res, next){
+  //test log
+  console.log(req.body);
+  mysql.pool.query("INSERT INTO APPOINTMENT (`Name`, `Location`, `Date`, `Description`) VALUES (?,?,?,?)",
+    [req.body.appointmentName, req.body.appointmentLocation, req.body.appointmentDate, req.body.appointmentDescription], function(err, result){
+    if (err){
+      next(err);
+      return;
+    }
+    res.send();
+  });
+});
+
 //this should insert a record to the table test
 app.get('/dbtest',function(req,res,next){
   mysql.pool.query("INSERT INTO test (`someInt`) VALUES (?)",1, function(err, result){
