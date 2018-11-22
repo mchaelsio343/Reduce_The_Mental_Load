@@ -12,7 +12,19 @@ app.set('port', 5624);
 
 //home page
 app.get('/',function(req,res){
-  res.render('home');
+  //select all the records from table `TODO`
+  var context={}
+  mysql.pool.query('SELECT Name,Urgency,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `TODO` ORDER BY Date',[true],function(err,results,feilds){
+    if(err){
+      res.write(JSON.stringify(err));
+      res.end();
+    }
+    context.TODO = JSON.parse(JSON.stringify(results));
+    //test log
+    console.log(context)
+    res.render('home',context);
+  });
+  
 });
 
 //insert a record into the table `TODO`
