@@ -14,17 +14,24 @@ app.set('port', 5624);
 app.get('/',function(req,res){
   //select all the records from table `TODO`
   var context={}
-  mysql.pool.query('SELECT Name,Urgency,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `TODO` ORDER BY Date',[true],function(err,results,feilds){
+  mysql.pool.query('SELECT id ,Name,Urgency,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `TODO` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
     if(err){
       res.write(JSON.stringify(err));
       res.end();
     }
-    context.TODO = JSON.parse(JSON.stringify(results));
-    //test log
-    console.log(context)
-    res.render('home',context);
+    else {
+        context.TODO = JSON.parse(JSON.stringify(results));
+        mysql.pool.query('SELECT id, Name,Location,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `APPOINTMENT` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
+            if(err){
+            res.write(JSON.stringify(err));
+            res.end();
+            }
+            context.APPOINTMENT = JSON.parse(JSON.stringify(results));
+            console.log(context)
+            res.render('home',context);
+        });
+    }
   });
-  
 });
 
 //insert a record into the table `TODO`
@@ -53,6 +60,58 @@ app.post('/addAPPOINTMENT',function(req, res, next){
     }
     res.send();
   });
+});
+
+//mark one appointment as done
+app.post('/markAppointment',function(req, res, next){
+    console.log(req.body);
+    mysql.pool.query("UPDATE APPOINTMENT SET done = 1 WHERE id = ?",
+        [req.body.id], function(err, result){
+            if (err){
+                next(err);
+                return;
+            }
+            res.send();
+        });
+});
+
+//mark one TODO as done
+app.post('/markTODO',function(req, res, next){
+    console.log(req.body);
+    mysql.pool.query("UPDATE TODO SET done = 1 WHERE id = ?",
+        [req.body.id], function(err, result){
+            if (err){
+                next(err);
+                return;
+            }
+            res.send();
+        });
+});
+
+//delete one appointment as done
+app.post('/deleteAppointment',function(req, res, next){
+    console.log(req.body);
+    mysql.pool.query("DELETE FROM APPOINTMENT WHERE id=?",
+        [req.body.id], function(err, result){
+            if (err){
+                next(err);
+                return;
+            }
+            res.send();
+        });
+});
+
+//delete one TODO as done
+app.post('/deleteTODO',function(req, res, next){
+    console.log(req.body);
+    mysql.pool.query("DELETE FROM TODO WHERE id=?",
+        [req.body.id], function(err, result){
+            if (err){
+                next(err);
+                return;
+            }
+            res.send();
+        });
 });
 
 //this should insert a record to the table test
