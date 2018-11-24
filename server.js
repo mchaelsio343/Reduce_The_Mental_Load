@@ -14,32 +14,41 @@ app.set('port', 5624);
 app.get('/',function(req,res){
   //select all the records from table `TODO`
   var context={}
-  mysql.pool.query('SELECT id ,Name,Urgency,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `TODO` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
+  mysql.pool.query('SELECT id ,Name,Urgency,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date,Category FROM `TODO` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
     if(err){
       res.write(JSON.stringify(err));
       res.end();
     }
-    else {
-        context.TODO = JSON.parse(JSON.stringify(results));
-        mysql.pool.query('SELECT id, Name,Location,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `APPOINTMENT` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
-            if(err){
-            res.write(JSON.stringify(err));
-            res.end();
-            }
-            context.APPOINTMENT = JSON.parse(JSON.stringify(results));
-            console.log(context)
-            res.render('home',context);
-        });
-    }
+
+    context.TODO = JSON.parse(JSON.stringify(results));
+    mysql.pool.query('SELECT id, Name,Location,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date FROM `APPOINTMENT` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
+      if(err){
+         res.write(JSON.stringify(err));
+          res.end();
+      }
+      
+    context.APPOINTMENT = JSON.parse(JSON.stringify(results));
+    mysql.pool.query('SELECT id, Name FROM `CATEGORY` WHERE Name IS NOT NULL ORDER BY id',[true],function(err,results,feilds){
+      if(err){
+        res.write(JSON.stringify(err));
+        res.end();
+      }
+
+    context.CATEGORY = JSON.parse(JSON.stringify(results));
+    console.log(context);
+    res.render('home',context);
+
   });
+        });
+    });
 });
 
 //insert a record into the table `TODO`
 app.post('/addTODO',function(req,res,next){
   //test log
   console.log(req.body)
-  mysql.pool.query("INSERT INTO TODO (`Name`, `Urgency`, `Date`) VALUES (?,?,?)", 
-    [req.body.todoName, req.body.todoUrgency,req.body.todoDate], function(err, result){
+  mysql.pool.query("INSERT INTO TODO (`Name`, `Urgency`, `Date`, `Category`) VALUES (?,?,?,?)", 
+    [req.body.todoName, req.body.todoUrgency,req.body.todoDate,req.body.todoCategory], function(err, result){
     if(err){
       next(err);
       return;
@@ -54,6 +63,20 @@ app.post('/addAPPOINTMENT',function(req, res, next){
   console.log(req.body);
   mysql.pool.query("INSERT INTO APPOINTMENT (`Name`, `Location`, `Date`, `Description`) VALUES (?,?,?,?)",
     [req.body.appointmentName, req.body.appointmentLocation, req.body.appointmentDate, req.body.appointmentDescription], function(err, result){
+    if (err){
+      next(err);
+      return;
+    }
+    res.send();
+  });
+});
+
+//insert a record into the table `CATEGORY`
+app.post('/addCategory',function(req, res, next){
+  //test log
+  console.log(req.body);
+  mysql.pool.query("INSERT INTO CATEGORY (`Name`) VALUES (?)",
+    [req.body.categoryName], function(err, result){
     if (err){
       next(err);
       return;
