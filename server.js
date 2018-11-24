@@ -124,6 +124,19 @@ app.post('/deleteAppointment',function(req, res, next){
         });
 });
 
+//delete category
+app.post('/deleteCategory',function(req, res, next){
+    console.log(req.body);
+    mysql.pool.query("DELETE FROM CATEGORY WHERE id=?",
+        [req.body.id], function(err, result){
+            if (err){
+                next(err);
+                return;
+            }
+            res.send();
+        });
+});
+
 //delete one TODO as done
 app.post('/deleteTODO',function(req, res, next){
     console.log(req.body);
