@@ -43,6 +43,27 @@ app.get('/',function(req,res){
     });
 });
 
+//view completed items
+app.get('/completeditems', function(req,res){
+  var context={};
+  mysql.pool.query('SELECT Name,DATE_FORMAT(Date,"%m/%d/%Y %H:%i:%s") AS Date FROM APPOINTMENT WHERE done = 1 ORDER BY Date',[true],function(err,results,feilds){
+    if(err){
+      res.write(JSON.stringify(err));
+      res.end();
+    }else{
+      context.APPOINTMENT = JSON.parse(JSON.stringify(results));
+      mysql.pool.query('SELECT Name,DATE_FORMAT(Date,"%m/%d/%Y %H:%i:%s") AS Date FROM TODO WHERE done = 1 ORDER BY Date',[true],function(err,results,feilds){
+        if(err){
+        res.write(JSON.stringify(err));
+        res.end();
+        }
+        context.TODO = JSON.parse(JSON.stringify(results));
+        console.log(context)
+        res.render('completeditems',context);
+      });
+  }});
+});
+
 //insert a record into the table `TODO`
 app.post('/addTODO',function(req,res,next){
   //test log
