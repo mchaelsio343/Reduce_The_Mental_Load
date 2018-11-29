@@ -9,10 +9,26 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', 5624);
 app.use('/static', express.static('public'));
+
+var view={
+    addTODO: 1,
+    addAppointment: 1,
+    addCategory: 1,
+    viewTODO: 1,
+    viewAppointment: 1,
+    viewCategory: 1
+};
 //home page
 app.get('/',function(req,res){
   //select all the records from table `TODO`
-  var context={}
+  var context={};
+  context.ViewAddTODO = view.addTODO;
+  context.ViewAddAppointment = view.addAppointment;
+  context.ViewAddCategory = view.addCategory;
+  context.viewTODO = view.viewTODO;
+  context.viewAppointment = view.viewAppointment;
+  context.viewCategory = view.viewCategory;
+
   mysql.pool.query('SELECT id ,Name,Urgency,DATE_FORMAT(Date,\'%m/%d/%Y %H:%i:%s\') AS Date,Category FROM `TODO` WHERE done = 0 ORDER BY Date',[true],function(err,results,feilds){
     if(err){
       res.write(JSON.stringify(err));
@@ -168,6 +184,22 @@ app.post('/deleteTODO',function(req, res, next){
             }
             res.send();
         });
+});
+
+app.post('/changeView',function(req,res,next){
+    console.log(req.body);
+    view.addTODO = req.body.view[0];
+    view.addAppointment = req.body.view[1];
+    view.addCategory = req.body.view[2];
+    view.viewTODO = req.body.view[3];
+    view.viewAppointment = req.body.view[4];
+    view.viewCategory = req.body.view[5];
+    res.send();
+});
+
+app.get('/customizeView',function(req,res){
+    var context = {}
+    res.render('customizeView',context);
 });
 
 //this should insert a record to the table test
