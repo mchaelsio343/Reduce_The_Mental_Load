@@ -22,7 +22,7 @@ function requestAddTODO(e){
 	//test log
 	console.log("We are inside requestAddTODO(). dataToServer: ");
 	console.log(dataToServer)
-		
+
 	//connect with the server
 	var req = new XMLHttpRequest();
 	req.open("POST","/addTODO",true);
@@ -36,11 +36,12 @@ function requestAddTODO(e){
 	}});
 	//send the data to server
 	req.send(dataToServer);
-	
+
 	event.preventDefault();
 }
 
 function TODOMarkDone(id) {
+	if(confirm('Are you sure you want to mark task complete?')){
     var dataToServer = {};
     dataToServer.id = id;
     dataToServer = JSON.stringify(dataToServer);
@@ -58,6 +59,7 @@ function TODOMarkDone(id) {
     //send the data to server
     req.send(dataToServer);
     event.preventDefault();
+	}
 }
 function TODODelete(id) {
 	if (confirm('Are you sure you want to delete this task?')) {
@@ -98,7 +100,7 @@ function requestAddAPPOINTMENT(e){
 	//test log
 	console.log("We are inside requestAddAPPOINTMENT(). dataToServer: ");
 	console.log(dataToServer)
-	
+
 	//connect with the server
 	var req = new XMLHttpRequest();
 	req.open("POST","/addAPPOINTMENT",true);
@@ -112,11 +114,12 @@ function requestAddAPPOINTMENT(e){
 	}});
 	//send the data to server
 	req.send(dataToServer);
-	
+
 	event.preventDefault();
 }
 
 function AppointmentMarkDone(id) {
+	if(confirm('Are you sure you want to mark appointment attended?')){
     var dataToServer = {};
     dataToServer.id = id;
     dataToServer = JSON.stringify(dataToServer);
@@ -134,6 +137,7 @@ function AppointmentMarkDone(id) {
     //send the data to server
     req.send(dataToServer);
     event.preventDefault();
+	}
 }
 
 function AppointmentDelete(id) {
@@ -173,7 +177,7 @@ function requestAddCategory(e){
 	console.log("We are inside requestAddCategory(). dataToServer: ");
 	console.log(dataToServer)
 
-	
+
 	//connect with the server
 	var req = new XMLHttpRequest();
 	req.open("POST","/addCategory",true);
@@ -189,7 +193,7 @@ function requestAddCategory(e){
 
 	//send the data to server
 	req.send(dataToServer);
-	
+
 	event.preventDefault();
 }
 
@@ -214,4 +218,4 @@ function CategoryDelete(id) {
     //send the data to server
     req.send(dataToServer);
     event.preventDefault();
-}    
+}
