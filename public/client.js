@@ -60,23 +60,25 @@ function requestAddTODO(e){
         event.preventDefault();
     }
     function TODODelete(id) {
-        var dataToServer = {};
-        dataToServer.id = id;
-        dataToServer = JSON.stringify(dataToServer);
-        //connect with the server
-        var req = new XMLHttpRequest();
-        req.open("POST","/deleteTODO",true);
-        req.setRequestHeader("Content-Type", "application/json");
-        //callback
-        req.addEventListener("load",function(){
-            if(req.status >= 200 && req.status < 400){
-                window.location.assign('/')
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }});
-        //send the data to server
-        req.send(dataToServer);
-        event.preventDefault();
+    	if (confirm('Are you sure you want to delete this task?')) {
+	        var dataToServer = {};
+	        dataToServer.id = id;
+	        dataToServer = JSON.stringify(dataToServer);
+	        //connect with the server
+	        var req = new XMLHttpRequest();
+	        req.open("POST","/deleteTODO",true);
+	        req.setRequestHeader("Content-Type", "application/json");
+	        //callback
+	        req.addEventListener("load",function(){
+	            if(req.status >= 200 && req.status < 400){
+	                window.location.assign('/')
+	            } else {
+	                console.log("Error in network request: " + req.statusText);
+	            }});
+	        //send the data to server
+	        req.send(dataToServer);
+	        event.preventDefault();
+    	}
     }
 
 
